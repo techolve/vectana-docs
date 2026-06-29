@@ -221,3 +221,7 @@ __marimo__/
 
 # Zensical
 site/
+
+
+# APM dependencies
+apm_modules/
