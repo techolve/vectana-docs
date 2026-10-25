@@ -1,4 +1,6 @@
 import { defineConfig } from "blume";
+import { googleAnalytics } from "blume/analytics";
+import { native } from "blume/consent";
 
 export default defineConfig({
   title: "Vectana",
@@ -16,8 +18,12 @@ export default defineConfig({
       { label: "GitHub", href: "https://github.com/techolve/vectana" },
       { label: "Docker Hub", href: "https://hub.docker.com/r/heki0824/vectana" },
       { label: { ja: "変更履歴", en: "Changelog" }, href: "https://github.com/techolve/vectana/blob/main/CHANGELOG.md" },
+      { label: { ja: "プライバシーポリシー", en: "Privacy policy" }, href: "/privacy" },
     ],
   },
+  // GA4 loads only after the reader accepts the consent banner.
+  analytics: [googleAnalytics({ id: "G-6J478GGZ89" })],
+  consent: native({ policy: "/privacy" }),
   deployment: {
     site: "https://docs.vectana.techolve.org",
   },
