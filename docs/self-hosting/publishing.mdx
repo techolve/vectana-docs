@@ -1,0 +1,65 @@
+---
+title: 公開する
+description: リバースプロキシや Cloudflare Tunnel で、Vectana を HTTPS で公開する方法。
+---
+
+`app` コンテナは、サーバー内からだけ接続できる `127.0.0.1:8000` で待ち受けます。外部には、HTTPS のリバースプロキシや Cloudflare Tunnel を通して公開してください。
+
+公開したら、`.env` の `WEB_URL` をその URL（例: `https://vectana.example.com`）にして、`docker compose up -d` で反映します。招待メールや通知のリンクに使われます。
+
+## Caddy
+
+HTTPS の証明書も自動で取得されます。
+
+```txt Caddyfile
+vectana.example.com {
+    reverse_proxy 127.0.0.1:8000
+}
+```
+
+## nginx
+
+```nginx /etc/nginx/conf.d/vectana.conf
+server {
+    listen 443 ssl;
+    server_name vectana.example.com;
+
+    ssl_certificate     /etc/letsencrypt/live/vectana.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/vectana.example.com/privkey.pem;
+
+    client_max_body_size 10m;  # lockfile のアップロード（最大 10MB）
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+## Cloudflare Tunnel
+
+サーバーのポートを開けずに公開できます。`cloudflared` の設定ファイルの `ingress` に追加し、DNS にルートを登録します。
+
+```yaml /etc/cloudflared/config.yml
+ingress:
+  - hostname: vectana.example.com
+    service: http://localhost:8000
+  # …ほかのホスト…
+  - service: http_status:404
+```
+
+```bash
+cloudflared tunnel route dns <トンネル名> vectana.example.com
+sudo systemctl restart cloudflared
+```
+
+`http_status:404` の行は最後に置く必要があります。それより後ろに書いたルールは使われません。
+
+## 確認
+
+```bash
+curl https://vectana.example.com/api/health
+# {"status":"ok","version":"1.0.0"}
+```

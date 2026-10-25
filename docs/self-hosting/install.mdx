@@ -1,0 +1,98 @@
+---
+title: インストール
+description: Docker Compose で Vectana を自分のサーバーに立ち上げて、最初の管理者を作るまで。
+---
+
+Vectana は、Docker Hub で公開しているイメージ [`heki0824/vectana`](https://hub.docker.com/r/heki0824/vectana)（linux/amd64・linux/arm64）と Docker Compose で動かします。
+
+## 必要なもの
+
+- Docker と Docker Compose v2 が使える Linux サーバー（メモリ 1GB 以上を推奨）
+- サーバーから外部への HTTPS 通信（`api.osv.dev` と `endoflife.date` に問い合わせます）
+- 公開用のドメインと、HTTPS で公開する仕組み（リバースプロキシや Cloudflare Tunnel など。[公開する](/self-hosting/publishing) を参照）
+- 招待メールや通知メールを送るための SMTP サーバー（なくても起動できます。[メールの設定](/self-hosting/mail) を参照）
+
+## 構成
+
+1 つのイメージを、役割ごとに 4 つのコンテナとして起動します。
+
+| サービス | 役割 |
+| --- | --- |
+| `db` | PostgreSQL 18。データはボリューム `db-data` に保存されます |
+| `migrate` | 起動時にデータベースを最新の構造に更新して終了します |
+| `app` | 画面と API。`127.0.0.1:8000` で待ち受けます |
+| `worker` | 起動時と、その後は定期的に、すべてのパッケージをチェックして通知します |
+
+## インストール手順
+
+<Steps>
+  <Step title="ファイルを用意する">
+    サーバーに作業用のディレクトリを作り、`compose.prod.yaml` と設定のひな形を取得します。
+
+    ```bash
+    mkdir -p /srv/vectana && cd /srv/vectana
+    curl -fsSLo compose.yaml https://raw.githubusercontent.com/techolve/vectana/main/compose.prod.yaml
+    curl -fsSLo .env https://raw.githubusercontent.com/techolve/vectana/main/.env.example
+    chmod 600 .env
+    ```
+  </Step>
+  <Step title=".env を設定する">
+    最低限、次の値を設定します。
+
+    ```bash .env
+    VECTANA_VERSION=1.0.0
+    POSTGRES_PASSWORD=（ランダムな文字列）
+    SECRET_KEY=（openssl rand -hex 32 の出力）
+    WEB_URL=https://vectana.example.com
+    GROUP_NAME=Example Group
+    ```
+
+    ランダムな値は次のコマンドで作れます。
+
+    ```bash
+    openssl rand -hex 24   # POSTGRES_PASSWORD 用
+    openssl rand -hex 32   # SECRET_KEY 用
+    ```
+
+    `SECRET_KEY` を設定しないと、`app` は起動しません。メールの設定は [メールの設定](/self-hosting/mail)、すべての項目は [設定](/self-hosting/configuration) を参照してください。
+  </Step>
+  <Step title="起動する">
+    ```bash
+    docker compose up -d
+    docker compose ps
+    ```
+
+    `db` が healthy、`migrate` が終了（exited 0）、`app` と `worker` が起動していれば成功です。
+
+    ```bash
+    curl http://127.0.0.1:8000/api/health
+    # {"status":"ok","version":"1.0.0"}
+    ```
+  </Step>
+  <Step title="最初の管理者を作る">
+    グループ管理者を 1 人作ります。パスワードの入力を求められます。
+
+    ```bash
+    docker compose exec app python -m app.cli create-admin \
+      --email you@example.com --name "管理者" --company "Example Inc."
+    ```
+
+    `--company` を付けると、その名前の親会社も一緒に作られ、管理者はそこに所属します。
+  </Step>
+  <Step title="公開してログインする">
+    [公開する](/self-hosting/publishing) の手順で `WEB_URL` のドメインを `127.0.0.1:8000` につなぎ、ブラウザで開いてログインします。あとは [組織の構成](/admin/organization) から会社や部署を作り、ユーザーを招待してください。
+  </Step>
+</Steps>
+
+## ログを見る
+
+```bash
+docker compose logs -f app       # 画面と API
+docker compose logs -f worker    # 定期チェックと通知（"Scanned ... package(s)" など）
+```
+
+チェックを今すぐ 1 回だけ実行するには、次のコマンドを使います。
+
+```bash
+docker compose run --rm worker python -m app.worker --once
+```

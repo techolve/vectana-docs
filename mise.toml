@@ -1,0 +1,18 @@
+[tools]
+node = "24"
+
+[tasks.install]
+description = "Install dependencies"
+run = "npm ci"
+
+[tasks.dev]
+description = "Preview the docs with hot reload"
+run = "npm run dev"
+
+[tasks.build]
+description = "Build the static site into dist/"
+run = "npm run build"
+
+[tasks.check]
+description = "Validate content, links and translations"
+run = "npx blume check"

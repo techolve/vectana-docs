@@ -1,0 +1,80 @@
+---
+title: Email
+description: Configure invitation and notification emails over SMTP, Cloudflare Email Service, or a mail server on the same host.
+---
+
+Vectana sends invitation and notification emails. Choose how with `MAIL_BACKEND`.
+
+| `MAIL_BACKEND` | How mail is sent |
+| --- | --- |
+| `smtp` | Through an SMTP server (default) |
+| `cloudflare` | Through the Cloudflare Email Service API |
+| `none` | Not sent (only logged) |
+
+:::note
+You can still invite people without email: pass them the link shown on the invitation screen.
+:::
+
+## SMTP
+
+Use the SMTP endpoint of an email service (SendGrid, Resend, Amazon SES, Google Workspace…) or your own mail server.
+
+```bash .env
+MAIL_BACKEND=smtp
+MAIL_FROM=Vectana <no-reply@example.com>
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USERNAME=(username)
+SMTP_PASSWORD=(password)
+SMTP_START_TLS=true
+SMTP_USE_TLS=false
+```
+
+For port 465 (SMTPS), set `SMTP_PORT=465`, `SMTP_USE_TLS=true` and `SMTP_START_TLS=false`.
+
+## Cloudflare Email Service
+
+If your domain is on Cloudflare, you can send with Cloudflare Email Service.
+
+```bash .env
+MAIL_BACKEND=cloudflare
+MAIL_FROM=no-reply@example.com
+CLOUDFLARE_ACCOUNT_ID=(account ID)
+CLOUDFLARE_API_TOKEN=(API token with email sending permission)
+```
+
+:::warning
+At the time of writing, Cloudflare Email Service is in beta, and sending to arbitrary recipients requires the Workers Paid plan. Verify your sending domain in the Cloudflare dashboard first.
+:::
+
+## A mail server on the same host
+
+If you run [docker-mailserver](https://github.com/docker-mailserver/docker-mailserver) or similar in Docker on the same server, connect Vectana to its network and send without authentication (provided the mail server accepts mail from Docker networks).
+
+Create `compose.override.yaml` next to `compose.yaml`. Replace `mail-network` with the network your mail server is on.
+
+```yaml compose.override.yaml
+services:
+  app:
+    networks: [default, mail-network]
+  worker:
+    networks: [default, mail-network]
+
+networks:
+  mail-network:
+    external: true
+```
+
+```bash .env
+MAIL_BACKEND=smtp
+MAIL_FROM=Vectana <no-reply@example.com>
+SMTP_HOST=mailserver   # the mail server's container name
+SMTP_PORT=25
+SMTP_START_TLS=false
+```
+
+## If mail doesn't arrive
+
+- Check `docker compose logs app worker` for sending errors
+- Set up SPF, DKIM and DMARC for the sending domain. Without them, mail may land in spam or be rejected
+- Failed notifications are retried on later scheduled checks (for 7 days after the finding)

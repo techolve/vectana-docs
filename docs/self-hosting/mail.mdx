@@ -1,0 +1,80 @@
+---
+title: メールの設定
+description: 招待メールと通知メールを送るための設定。SMTP・Cloudflare Email Service・同じサーバーのメールサーバーを使う方法。
+---
+
+Vectana は、招待メールと通知メールを送ります。送信方法は `MAIL_BACKEND` で選びます。
+
+| `MAIL_BACKEND` | 送信方法 |
+| --- | --- |
+| `smtp` | SMTP サーバー経由（初期値） |
+| `cloudflare` | Cloudflare Email Service の API |
+| `none` | 送信しない（ログに記録するだけ） |
+
+:::note
+メールを送らない設定でも、招待はできます。招待画面に表示されるリンクを、直接相手に渡してください。
+:::
+
+## SMTP
+
+メールサービス（SendGrid・Resend・Amazon SES・Google Workspace など）や、自社のメールサーバーの SMTP を使います。
+
+```bash .env
+MAIL_BACKEND=smtp
+MAIL_FROM=Vectana <no-reply@example.com>
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USERNAME=（ユーザー名）
+SMTP_PASSWORD=（パスワード）
+SMTP_START_TLS=true
+SMTP_USE_TLS=false
+```
+
+465 番ポート（SMTPS）を使う場合は、`SMTP_PORT=465`、`SMTP_USE_TLS=true`、`SMTP_START_TLS=false` にします。
+
+## Cloudflare Email Service
+
+Cloudflare でドメインを管理している場合は、Cloudflare Email Service で送信できます。
+
+```bash .env
+MAIL_BACKEND=cloudflare
+MAIL_FROM=no-reply@example.com
+CLOUDFLARE_ACCOUNT_ID=（アカウント ID）
+CLOUDFLARE_API_TOKEN=（メール送信の権限を付けた API トークン）
+```
+
+:::warning
+Cloudflare Email Service は、執筆時点ではベータ版で、任意の宛先に送るには Workers Paid プランが必要です。事前に、Cloudflare のダッシュボードで送信ドメインを認証してください。
+:::
+
+## 同じサーバーのメールサーバーを使う
+
+[docker-mailserver](https://github.com/docker-mailserver/docker-mailserver) などを同じサーバーの Docker で動かしている場合は、Vectana をそのネットワークにつなぐと、認証なしで送信できます（メールサーバー側で Docker のネットワークからの送信を許可している場合）。
+
+`compose.yaml` と同じディレクトリに `compose.override.yaml` を作ります。`mail-network` は、メールサーバーが参加しているネットワーク名に置き換えてください。
+
+```yaml compose.override.yaml
+services:
+  app:
+    networks: [default, mail-network]
+  worker:
+    networks: [default, mail-network]
+
+networks:
+  mail-network:
+    external: true
+```
+
+```bash .env
+MAIL_BACKEND=smtp
+MAIL_FROM=Vectana <no-reply@example.com>
+SMTP_HOST=mailserver   # メールサーバーのコンテナ名
+SMTP_PORT=25
+SMTP_START_TLS=false
+```
+
+## 届かないときは
+
+- `docker compose logs app worker` で、送信のエラーが出ていないか確認します
+- 送信元ドメインの SPF・DKIM・DMARC を設定してください。設定がないと、迷惑メールとして扱われたり、受け取りを拒否されたりします
+- 送信に失敗した通知は、次回の定期チェックで再送されます（見つかってから 7 日間）

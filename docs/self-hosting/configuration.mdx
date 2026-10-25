@@ -1,0 +1,52 @@
+---
+title: 設定
+description: .env で設定できる環境変数の一覧。
+---
+
+設定は、`compose.yaml` と同じディレクトリの `.env` に書きます。変更したら `docker compose up -d` で反映します。
+
+## 基本
+
+| 変数 | 初期値 | 説明 |
+| --- | --- | --- |
+| `VECTANA_IMAGE` | `heki0824/vectana` | 使うイメージ |
+| `VECTANA_VERSION` | `latest` | イメージのタグ。`1.0.0` のように固定するのがおすすめです |
+| `POSTGRES_PASSWORD` | （必須） | データベースのパスワード |
+| `SECRET_KEY` | （必須） | ログイン情報の署名に使う鍵。`openssl rand -hex 32` で作ります。変えると全員がログアウトされます |
+| `WEB_URL` | `http://localhost:8000` | 公開 URL。招待メールや通知のリンクに使います |
+| `GROUP_NAME` | `Vectana Group` | 画面に表示するグループ名 |
+
+## チェック
+
+| 変数 | 初期値 | 説明 |
+| --- | --- | --- |
+| `SCAN_INTERVAL_MINUTES` | `360` | 定期チェックの間隔（分） |
+| `SCAN_ON_CHANGE` | `true` | パッケージやランタイムを登録した直後にチェックするか |
+
+EOL の「まもなく終了」にする日数は、画面の [システム設定](/admin/settings) で変更します。
+
+## メール
+
+| 変数 | 初期値 | 説明 |
+| --- | --- | --- |
+| `MAIL_BACKEND` | `smtp` | `smtp`・`cloudflare`・`none` のいずれか |
+| `MAIL_FROM` | `Vectana <vectana@example.com>` | 送信元 |
+| `SMTP_HOST` | （空） | SMTP サーバー。空の場合はメールを送りません |
+| `SMTP_PORT` | `587` | ポート |
+| `SMTP_USERNAME` / `SMTP_PASSWORD` | （空） | 認証が必要な場合に設定します |
+| `SMTP_START_TLS` | `true` | STARTTLS を使う（主に 587 番） |
+| `SMTP_USE_TLS` | `false` | 最初から TLS で接続する（主に 465 番） |
+| `CLOUDFLARE_ACCOUNT_ID` / `CLOUDFLARE_API_TOKEN` | （空） | `MAIL_BACKEND=cloudflare` のときに使います |
+
+詳しくは [メールの設定](/self-hosting/mail) を参照してください。
+
+## そのほか
+
+| 変数 | 初期値 | 説明 |
+| --- | --- | --- |
+| `INVITATION_EXPIRE_DAYS` | `7` | 招待リンクの有効期限（日） |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | `15` | ログイン中のアクセストークンの有効期限（分）。自動で更新されます |
+| `REFRESH_TOKEN_EXPIRE_DAYS` | `7` | ログイン状態を保持する期間（日） |
+| `WEBHOOK_TIMEOUT_SECONDS` | `10` | Discord・Slack への送信のタイムアウト（秒） |
+| `OSV_TIMEOUT_SECONDS` | `30` | OSV への問い合わせのタイムアウト（秒） |
+| `EOL_TIMEOUT_SECONDS` | `20` | endoflife.date への問い合わせのタイムアウト（秒） |

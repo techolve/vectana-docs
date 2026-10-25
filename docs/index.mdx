@@ -1,0 +1,46 @@
+---
+title: Vectana とは
+description: プロジェクトが使っているパッケージやランタイムの脆弱性とサポート終了（EOL）を監視して、メールや Discord・Slack に通知するアプリです。
+---
+
+Vectana（ベクタナ）は、プロジェクトが使っているパッケージやランタイムを登録しておくと、**脆弱性**と**サポート終了**（EOL）を自動で監視して知らせてくれるアプリです。
+
+「あのライブラリに脆弱性が出たけど、うちのどのプロジェクトが使ってる？」「この Python、いつまでサポートされる？」を、プロジェクトをまたいで一か所で確認できます。
+
+## できること
+
+<CardGroup cols={2}>
+  <Card title="脆弱性の検知" icon="bug" href="/guides/vulnerabilities">
+    登録したパッケージのバージョンを OSV で定期的に照会し、影響を受ける脆弱性と修正版を表示します。
+  </Card>
+  <Card title="サポート終了（EOL）の検知" icon="calendar-clock" href="/guides/eol">
+    フレームワークや言語・DB・OS のサポート期限を endoflife.date で確認し、期限切れ・期限間近を知らせます。
+  </Card>
+  <Card title="lockfile と mise.toml の取り込み" icon="upload" href="/guides/packages">
+    `package-lock.json` や `uv.lock`、`pubspec.lock`、`mise.toml` などをドロップするだけで登録できます。
+  </Card>
+  <Card title="メール・Discord・Slack に通知" icon="bell" href="/guides/notifications">
+    新しく見つかったものをまとめて、担当メンバーのメールとチームのチャンネルに送ります。
+  </Card>
+  <Card title="会社・部署・協力会社に対応" icon="building-2" href="/admin/organization">
+    グループ会社と部署の構成、BP（協力会社）を含めた権限で、見える範囲を分けられます。
+  </Card>
+  <Card title="自分でホストできる" icon="server" href="/self-hosting/install">
+    Docker Compose で起動できます。ソースコードは AGPL-3.0 で公開しています。
+  </Card>
+</CardGroup>
+
+## 仕組み
+
+1. プロジェクトを作り、使っているパッケージ（lockfile）とランタイム（言語・DB・OS など）を登録します
+2. Vectana が OSV と endoflife.date に問い合わせて、脆弱性と EOL を判定します
+3. 新しく見つかったもの・状態が変わったものを、メールと Webhook でまとめて通知します
+4. 以降は定期的に（初期設定では 6 時間ごと）自動でチェックし続けます
+
+## ドキュメントの読み方
+
+- **はじめて使う方**: [ログインと基本操作](/getting-started/login) → [ダッシュボード](/getting-started/dashboard) → [プロジェクト](/guides/projects)
+- **組織の管理者の方**: [組織の構成](/admin/organization) → [ユーザーと権限](/admin/users)
+- **自分のサーバーで動かしたい方**: [インストール](/self-hosting/install)
+
+画面は日本語と英語に対応しています。このドキュメントも右上から English に切り替えられます。

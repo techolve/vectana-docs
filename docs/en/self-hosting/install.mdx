@@ -1,0 +1,98 @@
+---
+title: Installation
+description: Run Vectana on your own server with Docker Compose and create the first administrator.
+---
+
+Vectana runs from the image published on Docker Hub, [`heki0824/vectana`](https://hub.docker.com/r/heki0824/vectana) (linux/amd64 and linux/arm64), with Docker Compose.
+
+## Requirements
+
+- A Linux server with Docker and Docker Compose v2 (1 GB of memory or more recommended)
+- Outbound HTTPS from the server (Vectana queries `api.osv.dev` and `endoflife.date`)
+- A domain and a way to serve it over HTTPS, such as a reverse proxy or Cloudflare Tunnel (see [Publishing](/self-hosting/publishing))
+- An SMTP server for invitation and notification emails (optional to start; see [Email](/self-hosting/mail))
+
+## What runs
+
+One image runs as four containers, each with its own job.
+
+| Service | Job |
+| --- | --- |
+| `db` | PostgreSQL 18. Data lives in the `db-data` volume |
+| `migrate` | Brings the database schema up to date on start, then exits |
+| `app` | The web app and API, listening on `127.0.0.1:8000` |
+| `worker` | Checks every package on start and then periodically, and sends notifications |
+
+## Install
+
+<Steps>
+  <Step title="Get the files">
+    Create a directory on the server and download `compose.prod.yaml` and the settings template.
+
+    ```bash
+    mkdir -p /srv/vectana && cd /srv/vectana
+    curl -fsSLo compose.yaml https://raw.githubusercontent.com/techolve/vectana/main/compose.prod.yaml
+    curl -fsSLo .env https://raw.githubusercontent.com/techolve/vectana/main/.env.example
+    chmod 600 .env
+    ```
+  </Step>
+  <Step title="Edit .env">
+    At minimum, set these values.
+
+    ```bash .env
+    VECTANA_VERSION=1.0.0
+    POSTGRES_PASSWORD=(a random string)
+    SECRET_KEY=(output of openssl rand -hex 32)
+    WEB_URL=https://vectana.example.com
+    GROUP_NAME=Example Group
+    ```
+
+    Generate random values with:
+
+    ```bash
+    openssl rand -hex 24   # for POSTGRES_PASSWORD
+    openssl rand -hex 32   # for SECRET_KEY
+    ```
+
+    `app` refuses to start without `SECRET_KEY`. See [Email](/self-hosting/mail) for mail and [Configuration](/self-hosting/configuration) for every setting.
+  </Step>
+  <Step title="Start it">
+    ```bash
+    docker compose up -d
+    docker compose ps
+    ```
+
+    You're good when `db` is healthy, `migrate` has exited with code 0, and `app` and `worker` are running.
+
+    ```bash
+    curl http://127.0.0.1:8000/api/health
+    # {"status":"ok","version":"1.0.0"}
+    ```
+  </Step>
+  <Step title="Create the first administrator">
+    Create a group admin. You'll be asked for a password.
+
+    ```bash
+    docker compose exec app python -m app.cli create-admin \
+      --email you@example.com --name "Admin" --company "Example Inc."
+    ```
+
+    With `--company`, a parent company with that name is created too, and the admin belongs to it.
+  </Step>
+  <Step title="Publish it and log in">
+    Point your `WEB_URL` domain at `127.0.0.1:8000` as described in [Publishing](/self-hosting/publishing), open it in a browser and log in. Then create companies and departments under [Organization](/admin/organization) and invite your users.
+  </Step>
+</Steps>
+
+## Logs
+
+```bash
+docker compose logs -f app       # web app and API
+docker compose logs -f worker    # scheduled checks and notifications ("Scanned ... package(s)")
+```
+
+To run a check once, right now:
+
+```bash
+docker compose run --rm worker python -m app.worker --once
+```

@@ -1,0 +1,53 @@
+---
+title: 更新とバックアップ
+description: Vectana を新しいバージョンに更新する手順と、データベースのバックアップ・復元。
+---
+
+## バックアップ
+
+データはすべて PostgreSQL に入っています。定期的に、また**更新の前には必ず**バックアップを取ってください。
+
+```bash
+mkdir -p backups && chmod 700 backups
+docker compose exec -T db pg_dump -U vectana vectana | gzip > backups/vectana-$(date +%Y%m%d%H%M%S).sql.gz
+```
+
+`.env` も、別の安全な場所に保管してください（`SECRET_KEY` やパスワードが入っています）。
+
+## 更新する
+
+<Steps>
+  <Step title="変更内容を確認する">
+    [リリース一覧](https://github.com/techolve/vectana/releases) と [変更履歴](https://github.com/techolve/vectana/blob/main/CHANGELOG.md) で、新しいバージョンの内容を確認します。
+  </Step>
+  <Step title="バックアップを取る">
+    上の手順でデータベースをバックアップします。
+  </Step>
+  <Step title="バージョンを変えて起動し直す">
+    `.env` の `VECTANA_VERSION` を新しいバージョンにして、イメージを取得し直します。
+
+    ```bash
+    docker compose pull
+    docker compose up -d
+    ```
+
+    起動時に `migrate` がデータベースを自動で新しい構造に更新します。
+  </Step>
+  <Step title="動作を確認する">
+    ```bash
+    docker compose logs migrate        # "Running upgrade ..." が出ていれば、DB の更新が成功しています
+    curl http://127.0.0.1:8000/api/health
+    ```
+  </Step>
+</Steps>
+
+## 元に戻す
+
+データベースの更新は前に進む方向だけを想定しています。古いバージョンに戻す場合は、`VECTANA_VERSION` を戻したうえで、更新前のバックアップから復元してください。
+
+```bash
+docker compose stop app worker
+docker compose exec -T db psql -U vectana -d postgres -c "DROP DATABASE vectana WITH (FORCE);" -c "CREATE DATABASE vectana OWNER vectana;"
+gunzip -c backups/vectana-XXXXXXXXXXXXXX.sql.gz | docker compose exec -T db psql -U vectana -d vectana
+docker compose up -d
+```

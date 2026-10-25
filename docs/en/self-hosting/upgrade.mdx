@@ -1,0 +1,53 @@
+---
+title: Upgrades and backups
+description: Upgrade Vectana to a new version, and back up and restore the database.
+---
+
+## Back up
+
+All data lives in PostgreSQL. Back it up regularly, and **always before upgrading**.
+
+```bash
+mkdir -p backups && chmod 700 backups
+docker compose exec -T db pg_dump -U vectana vectana | gzip > backups/vectana-$(date +%Y%m%d%H%M%S).sql.gz
+```
+
+Keep a copy of `.env` somewhere safe too — it holds `SECRET_KEY` and your passwords.
+
+## Upgrade
+
+<Steps>
+  <Step title="Read what changed">
+    Check the [releases](https://github.com/techolve/vectana/releases) and the [changelog](https://github.com/techolve/vectana/blob/main/CHANGELOG.md) for the new version.
+  </Step>
+  <Step title="Back up">
+    Back up the database as shown above.
+  </Step>
+  <Step title="Change the version and restart">
+    Set `VECTANA_VERSION` in `.env` to the new version, then pull and restart.
+
+    ```bash
+    docker compose pull
+    docker compose up -d
+    ```
+
+    On start, `migrate` brings the database schema up to date automatically.
+  </Step>
+  <Step title="Check it">
+    ```bash
+    docker compose logs migrate        # "Running upgrade ..." means the schema was updated
+    curl http://127.0.0.1:8000/api/health
+    ```
+  </Step>
+</Steps>
+
+## Roll back
+
+Database migrations only move forward. To go back to an older version, set `VECTANA_VERSION` back and restore the backup you took before upgrading.
+
+```bash
+docker compose stop app worker
+docker compose exec -T db psql -U vectana -d postgres -c "DROP DATABASE vectana WITH (FORCE);" -c "CREATE DATABASE vectana OWNER vectana;"
+gunzip -c backups/vectana-XXXXXXXXXXXXXX.sql.gz | docker compose exec -T db psql -U vectana -d vectana
+docker compose up -d
+```

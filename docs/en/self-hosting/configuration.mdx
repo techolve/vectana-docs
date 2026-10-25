@@ -1,0 +1,52 @@
+---
+title: Configuration
+description: Every environment variable you can set in .env.
+---
+
+Settings go in `.env`, next to `compose.yaml`. Apply changes with `docker compose up -d`.
+
+## Basics
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `VECTANA_IMAGE` | `heki0824/vectana` | The image to run |
+| `VECTANA_VERSION` | `latest` | The image tag. Pinning a version such as `1.0.0` is recommended |
+| `POSTGRES_PASSWORD` | (required) | Database password |
+| `SECRET_KEY` | (required) | Key that signs logins. Generate it with `openssl rand -hex 32`. Changing it logs everyone out |
+| `WEB_URL` | `http://localhost:8000` | Public URL, used for links in invitation and notification emails |
+| `GROUP_NAME` | `Vectana Group` | Group name shown in the app |
+
+## Checks
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `SCAN_INTERVAL_MINUTES` | `360` | Minutes between scheduled checks |
+| `SCAN_ON_CHANGE` | `true` | Check packages and runtimes right after they're added |
+
+The "Ending soon" window for EOL is set in the app under [System settings](/admin/settings).
+
+## Email
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `MAIL_BACKEND` | `smtp` | `smtp`, `cloudflare` or `none` |
+| `MAIL_FROM` | `Vectana <vectana@example.com>` | Sender |
+| `SMTP_HOST` | (empty) | SMTP server. When empty, no email is sent |
+| `SMTP_PORT` | `587` | Port |
+| `SMTP_USERNAME` / `SMTP_PASSWORD` | (empty) | Set when the server requires authentication |
+| `SMTP_START_TLS` | `true` | Use STARTTLS (usually port 587) |
+| `SMTP_USE_TLS` | `false` | Connect with TLS from the start (usually port 465) |
+| `CLOUDFLARE_ACCOUNT_ID` / `CLOUDFLARE_API_TOKEN` | (empty) | Used with `MAIL_BACKEND=cloudflare` |
+
+See [Email](/self-hosting/mail) for details.
+
+## Other
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `INVITATION_EXPIRE_DAYS` | `7` | Days an invitation link stays valid |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | `15` | Minutes an access token is valid while logged in (renewed automatically) |
+| `REFRESH_TOKEN_EXPIRE_DAYS` | `7` | Days a login lasts |
+| `WEBHOOK_TIMEOUT_SECONDS` | `10` | Timeout for sending to Discord and Slack |
+| `OSV_TIMEOUT_SECONDS` | `30` | Timeout for OSV queries |
+| `EOL_TIMEOUT_SECONDS` | `20` | Timeout for endoflife.date queries |

@@ -1,0 +1,65 @@
+---
+title: Publishing
+description: Serve Vectana over HTTPS with a reverse proxy or Cloudflare Tunnel.
+---
+
+The `app` container listens on `127.0.0.1:8000`, which is reachable only from the server itself. Expose it through an HTTPS reverse proxy or Cloudflare Tunnel.
+
+Once it's published, set `WEB_URL` in `.env` to that URL (for example `https://vectana.example.com`) and run `docker compose up -d`. It's used for links in invitation and notification emails.
+
+## Caddy
+
+Caddy gets the HTTPS certificate for you.
+
+```txt Caddyfile
+vectana.example.com {
+    reverse_proxy 127.0.0.1:8000
+}
+```
+
+## nginx
+
+```nginx /etc/nginx/conf.d/vectana.conf
+server {
+    listen 443 ssl;
+    server_name vectana.example.com;
+
+    ssl_certificate     /etc/letsencrypt/live/vectana.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/vectana.example.com/privkey.pem;
+
+    client_max_body_size 10m;  # lockfile uploads (up to 10 MB)
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+## Cloudflare Tunnel
+
+Publish without opening any ports. Add an `ingress` rule to your `cloudflared` config and route DNS to the tunnel.
+
+```yaml /etc/cloudflared/config.yml
+ingress:
+  - hostname: vectana.example.com
+    service: http://localhost:8000
+  # …other hosts…
+  - service: http_status:404
+```
+
+```bash
+cloudflared tunnel route dns <tunnel-name> vectana.example.com
+sudo systemctl restart cloudflared
+```
+
+Keep the `http_status:404` rule last; rules after it are never used.
+
+## Check
+
+```bash
+curl https://vectana.example.com/api/health
+# {"status":"ok","version":"1.0.0"}
+```

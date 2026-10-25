@@ -1,0 +1,46 @@
+---
+title: What is Vectana?
+description: Vectana watches the packages and runtimes your projects use for vulnerabilities and end of life, and notifies you by email, Discord or Slack.
+---
+
+Vectana watches the packages and runtimes your projects use for **vulnerabilities** and **end of life (EOL)**, and tells you when something needs attention.
+
+"A library just got a CVE — which of our projects use it?" "How long is this Python version supported?" Vectana answers both, across all your projects, in one place.
+
+## What it does
+
+<CardGroup cols={2}>
+  <Card title="Vulnerability detection" icon="bug" href="/guides/vulnerabilities">
+    Checks the versions you register against OSV and shows the affected advisories and the fixed versions.
+  </Card>
+  <Card title="End-of-life detection" icon="calendar-clock" href="/guides/eol">
+    Checks support dates for frameworks, languages, databases and operating systems with endoflife.date.
+  </Card>
+  <Card title="Import lockfiles and mise.toml" icon="upload" href="/guides/packages">
+    Drop `package-lock.json`, `uv.lock`, `pubspec.lock`, `mise.toml` and more to register everything at once.
+  </Card>
+  <Card title="Email, Discord and Slack" icon="bell" href="/guides/notifications">
+    New findings are bundled into one digest per recipient and sent to project members and team channels.
+  </Card>
+  <Card title="Companies, departments and partners" icon="building-2" href="/admin/organization">
+    Model group companies, departments and partner (BP) companies, and control who sees which projects.
+  </Card>
+  <Card title="Self-hostable" icon="server" href="/self-hosting/install">
+    Runs with Docker Compose. The source code is available under AGPL-3.0.
+  </Card>
+</CardGroup>
+
+## How it works
+
+1. Create a project and register the packages (lockfiles) and runtimes (languages, databases, OS…) it uses
+2. Vectana asks OSV and endoflife.date about each of them
+3. New vulnerabilities and EOL changes are sent as a digest by email and webhook
+4. From then on, everything is re-checked periodically (every 6 hours by default)
+
+## Where to start
+
+- **New users**: [Logging in](/getting-started/login) → [Dashboard](/getting-started/dashboard) → [Projects](/guides/projects)
+- **Administrators**: [Organization](/admin/organization) → [Users and permissions](/admin/users)
+- **Running your own server**: [Installation](/self-hosting/install)
+
+The app is available in Japanese and English. You can switch this documentation's language at the top right.
