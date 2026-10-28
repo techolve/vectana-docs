@@ -14,3 +14,7 @@ mise run check    # 型・リンク・翻訳のチェック
 - 日本語のページは `docs/`、英語は `docs/en/` に同じ構成で置きます
 - `main` に push すると GitHub Actions でビルドされ、GitHub Pages に公開されます
 - 画面のスクリーンショット（`public/screenshots/{ja,en}/`）は、モノレポの `mise run docs:screenshots -- <このリポジトリ>/public/screenshots` で撮り直せます。架空のデモデータで撮るので、リリースで UI が変わったら撮り直してください
+
+## ライセンス
+
+このリポジトリ（ドキュメントの文章・画像・設定）は [CC BY 4.0](LICENSE) です。Vectana 本体のライセンスは [AGPL-3.0](https://github.com/techolve/vectana/blob/main/LICENSE) です。
