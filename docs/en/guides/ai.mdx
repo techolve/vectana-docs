@@ -1,6 +1,6 @@
 ---
 title: Use from AI (MCP)
-description: Triage vulnerabilities and work with projects, estimates and tasks from AI clients such as Claude, using a personal token and the Vectana MCP server.
+description: Triage vulnerabilities and work with projects, estimates, tasks, hours and invoices from AI clients such as Claude, using a personal token and the Vectana MCP server.
 ---
 
 Vectana has an [MCP](https://modelcontextprotocol.io/) server so AI clients such as Claude Desktop and Claude Code can work with it. Ask in plain words: "summarize the CRITICAL vulnerabilities assigned to me", "import this package-lock.json into the internal tool project", "create an initial estimate for the ACME deal".
@@ -79,6 +79,9 @@ Node.js 20 or later is required.
 | Estimates | List and view, create and update (with lines) |
 | Tasks | Your tasks, project tasks, create and update, create security tasks |
 | Sprints | List, burndown, velocity, create and update |
+| Timesheet | View a week, log a day's hours, save or submit a week, estimate vs actual |
+| Deal notes | List, add (next actions become tasks), update |
+| Billing | Project invoices, invoice list (accounting), plan invoices, record invoiced and paid |
 
 To import a lockfile or SBOM, just give the path of the file on the computer running the AI client ([supported formats](/guides/packages)).
 
@@ -94,3 +97,5 @@ So that an AI cannot delete data by mistake, **nothing can be deleted** through 
 - "Create security tasks for the vulnerabilities that have none and assign them to me"
 - "Create an initial estimate for the ACME deal: basic design 10 person-days, detailed design 15"
 - "Look at the current sprint's burndown and tell me whether we will finish"
+- "Log 6 hours on the customer portal's API design and 1 hour of internal meetings for today"
+- "List this month's overdue invoices"

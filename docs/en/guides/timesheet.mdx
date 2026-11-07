@@ -1,0 +1,57 @@
+---
+title: Timesheet and estimate vs actual
+description: Enter hours week by week, paste from Excel, submit a week, and read a project's estimate vs actual.
+---
+
+"Timesheet" in the sidebar is where you enter the hours you worked per task, one week (Monday to Sunday) at a time. A project's "Estimate vs actual" tab compares those hours with its estimates.
+
+## Enter hours [#enter]
+
+1. "Add row" picks what you worked on
+   - Your open tasks are listed; one click adds one
+   - Or pick a project, then a task or "No task (project in general)"
+   - For work outside projects, such as internal meetings or training, type a name
+2. Type hours into each day's cell (decimals like 0.5 are fine)
+3. "Save" stores the week
+
+To continue last week's work, "Same rows as last week" copies the rows (without hours).
+
+### Paste from Excel [#paste]
+
+Copy a range in Excel or a spreadsheet, select the top-left cell to fill and paste: the hours fill several rows and days at once. Lines beyond the last row are skipped, so add rows first.
+
+### The numbers [#numbers]
+
+| Column | Meaning |
+| --- | --- |
+| Total | The row's hours this week |
+| Left of estimate | The task's estimate (hours) minus everyone's hours on it so far. Negative means over the estimate |
+| Day total | Hours that day. A day over 24 hours cannot be saved |
+| Week / standard | The week's total against the standard 40 hours, and how much over |
+
+## Submit a week [#submit]
+
+When the week is complete, press "Submit week". Unsaved hours are saved first. You can still correct a submitted week, or "Withdraw" the submission.
+
+## Whose timesheets you can see [#who]
+
+| Who | Sees | Edits |
+| --- | --- | --- |
+| Everyone | Their own | Their own |
+| Department heads | People in their departments | No |
+| Company administrators | Everyone in their company | Everyone in their company |
+| Group administrators | Everyone | Everyone |
+
+When you can see more than one person, switch between them at the top right.
+
+## Estimate vs actual [#actuals]
+
+A project's "Estimate vs actual" tab compares won estimates with the hours entered, at 8 hours per person-day. Partner (BP) users do not see it.
+
+- **Effort (actual / estimate)**: the effort of won one-time estimates (initial and additional) against the hours so far. Amber above 90%, red above 100%
+- **This month**: hours entered this month
+- **Actual cost**: hours × each person's unit cost, shown only to those who see unit costs (sales, administrators, accounting; see [Who sees the money](/guides/sales#money))
+- **By phase**: top-level tasks with sub-tasks count as phases. A phase's estimate is the sum of its tasks' estimates (hours). Hours not on any task go to "Outside phases"
+- **By person**: hours per person
+
+Build phases in the Gantt chart ([Tasks](/guides/tasks)) and give tasks an estimate in hours to see which phase is running over.
