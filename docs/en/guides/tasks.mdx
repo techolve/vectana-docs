@@ -1,0 +1,108 @@
+---
+title: Tasks
+description: Development, security and other tasks, the Gantt chart, the scrum board, the maintenance list, and automatic security tasks.
+---
+
+All work is tracked as tasks. The same task shows on the dashboard, the Gantt chart, the board and the maintenance list.
+
+## Kinds of task [#kinds]
+
+| Kind | Used for |
+| --- | --- |
+| Development | Features, bug fixes and similar |
+| Security | Upgrading a package or runtime. Covers vulnerabilities and EOL together ([below](#security)) |
+| Other | Reports, environment setup and the like |
+
+A task has an assignee, start date, due date, status (to do, in progress, done), estimate in hours and a description. Only project members who are not viewers can be assigned. Members (except viewers) and managers can create and edit tasks; viewers can only read them.
+
+## Views [#views]
+
+The project's "Tasks" tab opens in the view that fits the project's method and stage. Switch between "Gantt", "Board" and "List" with the buttons at the top.
+
+| Project | Opens in |
+| --- | --- |
+| Method "Waterfall" | Gantt |
+| Method "Scrum" | Board |
+| Stage "Maintenance" | List (whatever the method) |
+
+Change the method with "Edit" on the "Overview" tab.
+
+### Gantt [#gantt]
+
+Tasks are listed on the left and their bars on the right.
+
+- **Phases**: choose a "Parent task" to group tasks under it. The parent's bar spans all of its children
+- **Milestones**: check "Milestone" for a one-day diamond on the start date
+- **Dependencies**: choose "Depends on" to draw an arrow. The arrow turns red when a task is planned to start before the one it depends on ends
+- The darker part of a bar is the progress (%). Unfinished bars past their due date are red
+- The red vertical line is today. "Day" and "Week" change the scale
+
+Tasks without a start or due date appear only in the list on the left. Click a bar or a task name to edit it.
+
+### Board (scrum) [#scrum]
+
+Each sprint shows "To do", "In progress" and "Done" columns, with the "Backlog" (tasks in no sprint) on the left.
+
+1. "New sprint" sets a name, dates, a sprint goal and a definition of done
+2. "To sprint" on a backlog card moves it into the current sprint. Give cards points
+3. "Start" makes the sprint active. A project has at most one active sprint
+4. Drag cards between columns to change their status
+5. When the sprint ends, press "Complete sprint". Unfinished tasks go back to the backlog
+
+Definition of done items can be ticked on the board.
+
+- **Burndown**: points left at the end of each sprint day. The dashed line is the ideal. A sprint with no points counts tasks instead
+- **Velocity**: committed (grey) and completed (black) points of every started sprint, and the average of the last four completed sprints. The committed figure is frozen when the sprint is completed
+
+### List (maintenance) [#list]
+
+Tasks are grouped by due date into "Overdue", "This week", "Later" and "No due date". "By assignee" groups them by person instead. Filter by assignee and kind, and tick "Show done" to include finished tasks.
+
+## Security tasks [#security]
+
+A security task is **one upgrade of one package (or runtime)**. If axios has two vulnerabilities, both belong to one task. The package's EOL joins the same task.
+
+The project's "Security" tab lists the tasks and what is not a task yet.
+
+### Created automatically [#auto]
+
+On every scan, a task is created automatically for:
+
+- open vulnerabilities **at or above the threshold** (including ones with unknown severity)
+- packages and runtimes **past their end of life (EOL)**
+
+Change the threshold at the top of the "Security" tab (HIGH or above by default). Only project managers can change it.
+
+When a task for the same package already exists, newly found vulnerabilities join it. Vulnerabilities below the threshold also join an open task of the same package.
+
+### Make task [#manual]
+
+Vulnerabilities below the threshold and approaching EOL are listed under "Below the threshold and not yet tasks". Press "Make task" to turn one into a task, or tick several and press "Make tasks from selection".
+
+### Recommended version and due date [#due]
+
+A task shows the current version and the recommended version (the lowest version that fixes all its vulnerabilities, see [Recommended version](/guides/vulnerabilities)).
+
+Without a due date of its own, a task is due when its earliest vulnerability is (that vulnerability's due date, or the SLA for its severity). A task with only EOL is due on the end-of-life date. Such derived dates are marked "*".
+
+### Completed automatically [#done]
+
+When every linked vulnerability and EOL item is resolved, the task is completed automatically.
+
+- Upgrade the package and [re-import the lockfile](/guides/packages): the old version's vulnerabilities disappear and the task completes
+- Ignoring the vulnerabilities also completes it when nothing else is left
+- You can also press "Mark done"
+
+Deleting a task returns its vulnerabilities and EOL items to the list of things not yet tasks. Each vulnerability's own assignee, due date and comments ([Vulnerabilities](/guides/vulnerabilities)) are kept separately from the task.
+
+## Tasks on the dashboard [#dashboard]
+
+The top of the dashboard lists open tasks, overdue and soonest due first.
+
+| Tab | Shows |
+| --- | --- |
+| Mine | Tasks assigned to you |
+| Team | Tasks of projects you are a member of |
+| Unassigned | Tasks nobody is assigned to, in projects you are a member of |
+
+Click a row to open its project.
