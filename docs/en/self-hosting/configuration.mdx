@@ -13,7 +13,7 @@ Settings go in `.env`, next to `compose.yaml`. Apply changes with `docker compos
 | `VECTANA_VERSION` | `latest` | The image tag. Pinning a version such as `1.0.0` is recommended |
 | `POSTGRES_PASSWORD` | (required) | Database password |
 | `SECRET_KEY` | (required) | Key that signs logins. Generate it with `openssl rand -hex 32`. Changing it logs everyone out |
-| `WEB_URL` | `http://localhost:8000` | Public URL, used for links in invitation and notification emails |
+| `WEB_URL` | `http://localhost:8000` | Public URL, used for links in invitation and notification emails and as the GitHub / GitLab webhook address |
 | `GROUP_NAME` | `Vectana Group` | Group name shown in the app |
 
 ## Checks

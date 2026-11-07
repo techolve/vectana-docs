@@ -13,7 +13,7 @@ description: .env で設定できる環境変数の一覧。
 | `VECTANA_VERSION` | `latest` | イメージのタグ。`1.0.0` のように固定するのがおすすめです |
 | `POSTGRES_PASSWORD` | （必須） | データベースのパスワード |
 | `SECRET_KEY` | （必須） | ログイン情報の署名に使う鍵。`openssl rand -hex 32` で作ります。変えると全員がログアウトされます |
-| `WEB_URL` | `http://localhost:8000` | 公開 URL。招待メールや通知のリンクに使います |
+| `WEB_URL` | `http://localhost:8000` | 公開 URL。招待メールや通知のリンク、GitHub・GitLab の Webhook の宛先に使います |
 | `GROUP_NAME` | `Vectana Group` | 画面に表示するグループ名 |
 
 ## チェック

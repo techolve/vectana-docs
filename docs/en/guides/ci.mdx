@@ -5,6 +5,10 @@ description: Issue an API token and have CI, such as GitHub Actions, import lock
 
 Re-importing lockfiles by hand after every dependency update is tedious and easy to forget. Have CI send them instead, and Vectana always matches your repository.
 
+:::tip
+On GitHub or GitLab, [linking the repository](/guides/repositories) imports lockfiles and SBOMs on every push with no CI setup. Use this page when CI generates the SBOM or for other services.
+:::
+
 ## Issue an API token
 
 Tokens are issued on the project's "CI" tab. The tab is shown only to people who can manage the project (project owners, company admins, department heads and group admins).
