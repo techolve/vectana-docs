@@ -1,0 +1,67 @@
+---
+title: "Sales: customers and estimates"
+description: Manage customers and contacts, move deals forward, write estimates, and who sees the money.
+---
+
+People with the sales role and administrators can register customers, create a project at the inquiry stage and follow it through estimates to the order.
+
+## Customers [#customers]
+
+"Customers" in the sidebar holds client companies and their contacts. It is separate from the group and partner companies under Organization.
+
+- "Add customer" creates one from its name and industry. Use "Edit" on its page for address, phone, payment terms, where to send invoices, website and notes
+- "Add contact" registers people at the customer (name, department or title, email, phone). One can be the main contact
+- The customer page lists its projects and estimates. Lost deals stay there for later analysis
+- A customer with projects can't be deleted
+
+Each customer belongs to the group company that deals with it. Sales handle only their own company's customers.
+
+| Who | Customers |
+| --- | --- |
+| Group admin | See and edit all |
+| Company admin, sales | See and edit their company's |
+| Accounting | See their company's |
+| PMO | See all |
+| Everyone else, partners | None |
+
+## Move a deal forward [#deals]
+
+1. Under "Projects", press "New project", set the stage to "Inquiry" and pick the customer. You can also enter an expected amount and probability
+2. Use "Edit" on the "Overview" tab to update the probability, next action and its date, and the sales owner
+3. Drag the card along the pipeline: Proposal, then Negotiation
+4. Marking an estimate as won moves the project to "Won" automatically
+
+If you lose the deal, set the stage to "Lost" and record the reason and competitor. Lost and on-hold projects move to the "Closed / archived" tab and stay out of the usual lists.
+
+See [Projects](/guides/projects#stages) for what each stage means and who can see it.
+
+## Estimates [#estimates]
+
+Write estimates on a project's "Estimates" tab. A project can have several: additional work after the first build and maintenance renewals are added as new estimates of the same project. Each one is won or lost on its own.
+
+| Field | Description |
+| --- | --- |
+| Estimate | Its name, such as "Initial build (v3)" |
+| Kind | Initial build, additional work, maintenance or other |
+| Status | Draft, submitted, won or lost. Won and lost record the date |
+| Billing | One-time or monthly. Use monthly for maintenance |
+| Amount | Excluding tax. For monthly billing, one month |
+| Issued, due, contract ends | Optional |
+| Breakdown | Work, person, effort (person-days) and unit cost. Pick a person and leave the unit cost empty to use theirs |
+
+With a breakdown, effort is the sum of its rows, and cost (effort × unit cost) and margin are calculated. Without one, enter the effort directly.
+
+Unit costs in a breakdown are kept as they were when saved: changing a user's unit cost later doesn't rewrite old estimates.
+
+### Who sees the money [#money]
+
+| Information | Sales, administrators, accounting | Employees on the project | Partner (BP) users |
+| --- | --- | --- | --- |
+| Estimate amount, effort, margin | Yes | Yes | No |
+| Per-person unit cost and cost | Yes | No | No |
+| Customer, stage, order amount | Yes | Yes | No |
+| Tasks and vulnerabilities (their projects) | Yes | Yes | Yes |
+
+Employees see amounts because knowing them helps their careers. Per-person unit costs would reveal salaries, so only sales, administrators and accounting of the same company see them.
+
+Sales (for their own company) and administrators create and edit estimates. Set unit costs under "Organization" → "Users" ([Users and permissions](/admin/users#roles)).

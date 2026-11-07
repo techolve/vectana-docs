@@ -1,9 +1,9 @@
 ---
 title: Projects
-description: Create projects, assign members, understand project roles, and change or delete a project.
+description: Create projects, understand stages and tabs, assign members and project roles, and change or delete a project.
 ---
 
-In Vectana you create a **project** for each system or repository you want to watch. Packages, runtimes and notification targets all belong to a project.
+In Vectana you create a **project** for each system or deal. One project follows the work from the first inquiry through development and maintenance. Packages, runtimes, notification targets and estimates all belong to a project.
 
 ## Create a project
 
@@ -17,8 +17,32 @@ Go to "Projects" in the sidebar and press "New project".
 | Description | Optional |
 | Company | The company the project belongs to. Only group admins can pick a company other than their own |
 | Department | Optional. [Department heads](/admin/users) can see projects of their department and its sub-departments |
+| Stage | Internal systems that skip sales start in "In development" or "Maintenance". Only sales and administrators can pick a sales stage such as "Inquiry" |
+| Method | Waterfall (Gantt) or Scrum (board). You can change it later |
+| Customer | Only sales and administrators can pick one. Leave it empty for an internal project |
 
 Whoever creates the project becomes its **owner**.
+
+## Stages and tabs [#stages]
+
+Every project is in one of these stages.
+
+| Stage | Meaning | List tab |
+| --- | --- | --- |
+| Inquiry | Someone asked us | Deals |
+| Proposal | Writing a proposal or estimate | Deals |
+| Negotiation | Estimate sent, waiting or negotiating | Deals |
+| Won | Ordered, before development starts | In progress |
+| In development | Being built | In progress |
+| Maintenance | Delivered and maintained | Maintenance |
+| On hold | Paused for now | Closed / archived |
+| Lost | We lost the deal | Closed / archived |
+
+Until a project is ordered (a deal), only sales, administrators and its members can see it. Moving it to Won, In development or Maintenance records the order date, and department heads, PMO and accounting can see it from then on.
+
+Sales and administrators change the stage. Project owners can move between Won, In development and Maintenance only (for example to Maintenance after delivery).
+
+The project list switches between "Table" and "Pipeline"; the Deals tab opens as a pipeline. The pipeline shows one column per stage; drag a card to another column to change its stage. Cards whose next action is overdue turn red. See [Sales: customers and estimates](/guides/sales) for the sales side.
 
 :::note
 Partner (BP) users can't create projects.
@@ -28,10 +52,12 @@ Partner (BP) users can't create projects.
 
 ![Project page (Vulnerabilities tab)](/screenshots/en/project-vulns.png)
 
-The top of a project shows its company, department and open vulnerability and EOL counts. Tabs switch between:
+The top of a project shows its stage, customer, company, department and open vulnerability and EOL counts. Tabs switch between:
 
 | Tab | Contents |
 | --- | --- |
+| Overview | Customer, method, manager, period and sales owner, plus order amount or deal status. Change them with "Edit" |
+| Estimates | The project's estimates ([Sales: customers and estimates](/guides/sales#estimates)). Hidden from partner (BP) users |
 | Vulnerabilities | Vulnerabilities found in this project ([Vulnerabilities](/guides/vulnerabilities)) |
 | EOL | Support status of packages and runtimes, and runtime registration ([End of life](/guides/eol)) |
 | Packages | Packages to watch and lockfile import ([Registering packages](/guides/packages)) |
@@ -59,6 +85,6 @@ Company admins, group admins and the department's heads can do everything an own
 
 ## Change or delete a project
 
-On the "Settings" tab you can change the name, description and department.
+On the "Settings" tab you can change the name, description and department. Change the stage, method, manager and period with "Edit" on the "Overview" tab.
 
 To delete a project, type its name to confirm. Its packages, runtimes, findings and webhooks are deleted too, and this can't be undone.
