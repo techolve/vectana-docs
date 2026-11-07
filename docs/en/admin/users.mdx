@@ -5,16 +5,21 @@ description: Invite users, understand roles and visibility, department heads and
 
 ## Roles and visibility [#roles]
 
-A user's role, and whether they head a department, decide which projects they see and what they can do.
+A user can hold **any number** of the roles below. With none, they are a member who sees only the projects they're assigned to. Roles, and whether someone heads a department, decide which projects they see and what they can do.
 
-| Who | Projects they see | Organization management |
+| Who | Projects they see | Can |
 | --- | --- | --- |
-| Group admin | All | Every company, department and user, plus system settings |
-| Company admin | All projects of their company | Their company's departments and users |
-| Department head | Projects of the departments they head and all sub-departments (plus assigned ones) | None |
+| Group admin | All | Manage every company, department and user, system settings, all customers and estimates |
+| Company admin | All of their company's, deals included | Manage their company's departments and users, customers and estimates |
+| Sales | All of their company's, deals included | Create and edit their company's customers and estimates, manage deals |
+| Accounting | Their company's ordered projects (read only) | See their company's customers, estimates and unit costs |
+| PMO | Ordered projects of every company (read only) | See all customers |
+| Department head | Ordered projects of the departments they head and all sub-departments (plus assigned ones) | None |
 | Member | Only projects they're assigned to | None |
 | Partner (BP) user | Only projects they're assigned to | None |
 
+- Deals (projects not yet ordered) are shown only to sales, administrators and the project's members ([Projects](/guides/projects#stages))
+- Per-person unit costs (per day) are shown only to administrators, sales and accounting of the same company. They are used to cost estimates ([Sales: customers and estimates](/guides/sales#money))
 - Projects you can't see don't appear in lists, and opening their URL directly shows "not found"
 - Company admins, group admins and department heads can do everything an owner can in the projects they see
 - In projects you're assigned to, your project role (owner, member, viewer) decides what you can do ([Projects](/guides/projects))
@@ -23,7 +28,8 @@ A user's role, and whether they head a department, decide which projects they se
 
 Users of a partner company have these limits:
 
-- Their role is always member (they can't be administrators)
+- They can't have any role (not administrator, not sales)
+- They don't see customers, stages or estimate amounts
 - They can't create projects
 - They can't be project owners
 - They can't search for other users
@@ -38,7 +44,7 @@ Invite people on the "Invitations" tab. Company admins invite to their own compa
 | --- | --- |
 | Email | The person's address |
 | Display name | Optional; they can change it later |
-| Role | Group admin (only group admins can grant it), company admin or member |
+| Roles | Optional; pick any number. Only group admins can grant group admin |
 | Email language | The language of the invitation email and of the new account |
 | Departments | Optional. Pick one or more (people can belong to several), one primary, and whether they head each one |
 
@@ -54,10 +60,11 @@ Pending invitations are listed and can be revoked. Inviting the same address aga
 
 ![Users tab](/screenshots/en/admin-users.png)
 
-The "Users" tab lists users with their role, departments and status. Press "Edit" to change:
+The "Users" tab lists users with their roles, departments, unit cost and status. Press "Edit" to change:
 
 - Display name
-- Role
+- Roles (any number)
+- Unit cost (per person-day), used to cost estimates
 - Allow login (turn it off to stop the user from logging in)
 - Departments (multiple, primary, head)
 
