@@ -4,5 +4,5 @@ export default defineMeta({
   title: "Guides",
   icon: "book-open",
   order: 2,
-  pages: ["projects", "sales", "packages", "vulnerabilities", "eol", "notifications"],
+  pages: ["projects", "sales", "packages", "ci", "vulnerabilities", "eol", "notifications"],
 });

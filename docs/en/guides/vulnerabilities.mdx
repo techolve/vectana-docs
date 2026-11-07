@@ -15,13 +15,23 @@ Vectana looks up vulnerabilities affecting your registered versions in [OSV](htt
 | --- | --- |
 | Severity | CRITICAL / HIGH / MEDIUM / LOW / UNKNOWN, plus the CVSS score when known |
 | Project | The affected project |
-| Package | Ecosystem, package name and version |
-| Fixed in | The smallest fixed version newer than yours. Upgrading to it resolves the issue |
+| Package | Ecosystem, package name and version, with the package's [recommended upgrade](#recommended-upgrade) below |
+| Fixed in | The smallest fixed version newer than yours. Upgrading to it resolves this vulnerability |
 | Vulnerability | The advisory ID (GHSA, PYSEC…), aliases such as the CVE, and a summary. Click the ID to open it on osv.dev |
 | Detected | When Vectana first found it |
+| Assignee | Who is handling it, or "Unassigned" |
+| Due date | When it should be handled by. Unresolved findings past their due date show "Overdue" in red |
 | Status | How you're handling it |
 
-The list is sorted by severity. Filter by keyword, severity and status at the top right.
+The button at the end of each row opens the [details panel](#details-panel). Rows with comments show the comment count on the button.
+
+The list is sorted by severity. At the top right you can filter by:
+
+- Keyword (project, package, advisory ID, summary, assignee)
+- Severity
+- Status (open, unresolved (open + acknowledged), acknowledged, ignored, all)
+- Assignee (all, assigned to me, unassigned)
+- Due date (any, overdue)
 
 ### About severity
 
@@ -38,6 +48,41 @@ Change each finding's status to record what you've done.
 | Ignored | It doesn't affect you (you don't use the affected feature, for example) |
 
 Acknowledged and ignored findings aren't counted as open on the dashboard and aren't notified. Members and above can change the status.
+
+Open and acknowledged findings are both **unresolved**: they still need work. The assignee counts and the overdue check only look at unresolved findings.
+
+## Details panel
+
+The button at the end of a row opens a panel on the right where you can:
+
+- **Change the status, assignee and due date**: changes are saved right away
+- **Comment**: record your plan or findings. Ctrl+Enter (⌘+Enter on a Mac) posts too
+- **See the history**: who changed the status, assignee or due date, when, and from what to what, listed with the comments in time order
+
+### Assignee and due date
+
+- Owners and members of the project can be assigned. Viewers can't. People who can work on the project without being a member, such as company administrators, can assign themselves
+- The due date is a calendar date. Unresolved findings past it show as overdue, and are counted on the dashboard
+- You can clear the assignee or the due date. That is recorded in the history too
+
+### Who can comment
+
+- Members and above can comment. Viewers can read only
+- Comments can be deleted by their author and by anyone who manages the project (owners, company administrators and so on)
+- The change history can't be deleted
+
+When a finding is [resolved](#resolve-it) by upgrading the package, it leaves the list together with its comments and history. Copy anything you want to keep to your ticket system as well.
+
+## Recommended upgrade
+
+When a package has several vulnerabilities, Vectana shows the version that fixes them all at once as the recommended upgrade. It appears under the package name in the vulnerability list, and in the "Upgrade to" column of the project's Packages tab.
+
+- Open and acknowledged vulnerabilities count. Ignored ones do not
+- The recommendation is the newest of their fixed versions, which is the lowest version that fixes all of them
+- A patch / minor / major label shows how big the jump is. Major upgrades often include breaking changes, so check the release notes. Below 1.0 (0.x), a minor bump often breaks compatibility too, so it is labeled major
+- When some vulnerabilities have no fix yet, "+N without a fix" is added. When none of them has a fix, it shows "No fix yet"
+
+The recommendation is a guide computed from the advisories' fixed versions. After upgrading, import the lockfile again and check that the vulnerabilities are gone.
 
 ## Resolve it
 

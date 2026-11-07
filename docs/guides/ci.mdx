@@ -1,0 +1,136 @@
+---
+title: CI から自動で登録する
+description: API トークンを発行して、GitHub Actions などの CI から lockfile や SBOM を自動で取り込む方法。
+---
+
+依存関係を更新するたびに手で lockfile を取り込み直すのは手間がかかり、忘れがちです。CI から自動で送るようにしておくと、Vectana の情報がいつもリポジトリと同じ状態に保たれます。
+
+## API トークンを発行する
+
+プロジェクトの「CI 連携」タブで発行します。このタブはプロジェクトを管理できる人（プロジェクトのオーナー、会社管理者、部署長、グループ管理者）にだけ表示されます。
+
+1. 「API トークンを発行」に用途（例: `GitHub Actions`）を入力します
+2. 有効期限を選びます（30 日 / 90 日 / 1 年 / 無期限）
+3. 「発行」を押すと `vct_` で始まるトークンが表示されます
+
+:::warning
+トークンは**発行したときに一度だけ**表示されます。すぐに CI のシークレットに保存してください。紛失した場合は失効させて、新しく発行し直します。
+:::
+
+API トークンでできるのは、**そのプロジェクトへの取り込み**と**スキャンの実行**だけです。画面の閲覧、ほかのプロジェクトへのアクセス、設定の変更はできません。トークンは人ではなくプロジェクトに紐づくので、発行した人が異動・退職しても CI は止まりません。
+
+一覧では、発行者・有効期限・最終利用日時を確認できます。使わなくなったトークンや漏れた可能性のあるトークンは、右端のゴミ箱で失効させてください。
+
+## 取り込み API
+
+```
+POST /api/projects/{プロジェクト ID}/packages/import
+Authorization: Bearer vct_...
+Content-Type: multipart/form-data
+```
+
+| フィールド | 内容 |
+| --- | --- |
+| `file` | lockfile または SBOM（必須）。対応形式は[パッケージの登録](/guides/packages)を参照 |
+| `source` | 取り込み元の名前（省略可。英数字と `._/@+-` で 80 文字以内）。省略するとファイル名になります |
+
+プロジェクト ID は、プロジェクト画面の URL（`/projects/detail/?id=...`）や「CI 連携」タブの例に入っています。
+
+```bash
+curl -fsS -X POST \
+  -H "Authorization: Bearer $VECTANA_TOKEN" \
+  -F "file=@bom.json" \
+  -F "source=backend" \
+  https://vectana.example.com/api/projects/<プロジェクト ID>/packages/import
+```
+
+結果は JSON で返ります。
+
+```json
+{
+  "filename": "bom.json",
+  "kind": "packages",
+  "format": "CycloneDX",
+  "ecosystem": "Maven, npm",
+  "added": 12,
+  "removed": 3,
+  "total": 240,
+  "skipped": [],
+  "unsupported": { "deb": 85 }
+}
+```
+
+`unsupported` は、SBOM に含まれていたものの Vectana では照会できないコンポーネント（OS パッケージなど）の件数です。
+
+取り込みのあとは、追加されたパッケージのスキャンがバックグラウンドで自動的に始まります。すべてのパッケージを今すぐ照会し直したい場合は `POST /api/projects/{プロジェクト ID}/scan` を同じトークンで呼び出します。
+
+### 複数のリポジトリやサービスを 1 つのプロジェクトに
+
+取り込み直したときの差分は、`source` の名前ごとに管理されます。`source` を分ければ、同じ `bom.json` という名前でも互いに上書きしません。
+
+```bash
+-F "source=frontend"   # フロントエンドのリポジトリから
+-F "source=backend"    # バックエンドのリポジトリから
+```
+
+## GitHub Actions の例
+
+[Syft](https://github.com/anchore/syft)（`anchore/sbom-action`）で CycloneDX の SBOM を作り、main ブランチへの push ごとに送る例です。トークンはリポジトリのシークレット `VECTANA_TOKEN` に登録しておきます。
+
+```yaml
+# .github/workflows/sbom.yml
+name: SBOM
+on:
+  push:
+    branches: [main]
+jobs:
+  sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: anchore/sbom-action@v0
+        with:
+          format: cyclonedx-json
+          output-file: bom.json
+          upload-artifact: false
+      - name: Upload to Vectana
+        run: |
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${{ secrets.VECTANA_TOKEN }}" \
+            -F "file=@bom.json" \
+            -F "source=${{ github.event.repository.name }}" \
+            https://vectana.example.com/api/projects/<プロジェクト ID>/packages/import
+```
+
+SBOM を作らずに、lockfile をそのまま送ることもできます。
+
+```yaml
+      - name: Upload lockfile to Vectana
+        run: |
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${{ secrets.VECTANA_TOKEN }}" \
+            -F "file=@package-lock.json" \
+            https://vectana.example.com/api/projects/<プロジェクト ID>/packages/import
+```
+
+### Maven プロジェクト
+
+Maven には lockfile がないため、[CycloneDX Maven Plugin](https://github.com/CycloneDX/cyclonedx-maven-plugin) で SBOM を作って送ります。
+
+```bash
+mvn org.cyclonedx:cyclonedx-maven-plugin:makeAggregateBom -DoutputFormat=json
+curl -fsS -X POST -H "Authorization: Bearer $VECTANA_TOKEN" \
+  -F "file=@target/bom.json" \
+  https://vectana.example.com/api/projects/<プロジェクト ID>/packages/import
+```
+
+Gradle の場合は、[依存関係のロック](https://docs.gradle.org/current/userguide/dependency_locking.html)で作られる `gradle.lockfile` をそのまま送れます。
+
+## エラーになったとき
+
+| ステータス | 原因 |
+| --- | --- |
+| 401 | トークンが間違っている、失効している、または期限切れ |
+| 404 | プロジェクト ID が違う（トークンは発行したプロジェクトにしか使えません） |
+| 413 | ファイルが 10 MB を超えている |
+| 422 | 対応していない形式、または読み込めないファイル |

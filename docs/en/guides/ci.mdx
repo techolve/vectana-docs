@@ -1,0 +1,136 @@
+---
+title: Register from CI
+description: Issue an API token and have CI, such as GitHub Actions, import lockfiles and SBOMs automatically.
+---
+
+Re-importing lockfiles by hand after every dependency update is tedious and easy to forget. Have CI send them instead, and Vectana always matches your repository.
+
+## Issue an API token
+
+Tokens are issued on the project's "CI" tab. The tab is shown only to people who can manage the project (project owners, company admins, department heads and group admins).
+
+1. Under "Issue an API token", enter what it's for (for example `GitHub Actions`)
+2. Pick an expiry (30 days / 90 days / 1 year / never)
+3. Press "Issue" to see a token starting with `vct_`
+
+:::warning
+The token is shown **only once**, when it is issued. Save it to your CI secrets right away. If you lose it, revoke it and issue a new one.
+:::
+
+An API token can only **import into its project** and **start a scan**. It cannot view pages, reach other projects or change settings. Tokens belong to the project, not to a person, so CI keeps working when the person who issued one moves on.
+
+The list shows who issued each token, when it expires and when it was last used. Revoke tokens you no longer use, or that may have leaked, with the trash icon.
+
+## Import API
+
+```
+POST /api/projects/{project ID}/packages/import
+Authorization: Bearer vct_...
+Content-Type: multipart/form-data
+```
+
+| Field | Description |
+| --- | --- |
+| `file` | A lockfile or SBOM (required). See [Registering packages](/guides/packages) for the formats |
+| `source` | A name for where it comes from (optional; up to 80 letters, digits and `._/@+-`). Defaults to the file name |
+
+The project ID is in the project page URL (`/projects/detail/?id=...`) and in the example on the "CI" tab.
+
+```bash
+curl -fsS -X POST \
+  -H "Authorization: Bearer $VECTANA_TOKEN" \
+  -F "file=@bom.json" \
+  -F "source=backend" \
+  https://vectana.example.com/api/projects/<project ID>/packages/import
+```
+
+The response is JSON:
+
+```json
+{
+  "filename": "bom.json",
+  "kind": "packages",
+  "format": "CycloneDX",
+  "ecosystem": "Maven, npm",
+  "added": 12,
+  "removed": 3,
+  "total": 240,
+  "skipped": [],
+  "unsupported": { "deb": 85 }
+}
+```
+
+`unsupported` counts SBOM components Vectana can't look up, such as OS packages.
+
+Newly added packages are scanned in the background right after the import. To check every package again now, call `POST /api/projects/{project ID}/scan` with the same token.
+
+### Several repositories or services in one project
+
+Re-imports are tracked per `source` name. With different `source` names, files that share a name, such as `bom.json`, don't replace each other.
+
+```bash
+-F "source=frontend"   # from the frontend repository
+-F "source=backend"    # from the backend repository
+```
+
+## GitHub Actions example
+
+This builds a CycloneDX SBOM with [Syft](https://github.com/anchore/syft) (`anchore/sbom-action`) and sends it on every push to main. Store the token as the repository secret `VECTANA_TOKEN`.
+
+```yaml
+# .github/workflows/sbom.yml
+name: SBOM
+on:
+  push:
+    branches: [main]
+jobs:
+  sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: anchore/sbom-action@v0
+        with:
+          format: cyclonedx-json
+          output-file: bom.json
+          upload-artifact: false
+      - name: Upload to Vectana
+        run: |
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${{ secrets.VECTANA_TOKEN }}" \
+            -F "file=@bom.json" \
+            -F "source=${{ github.event.repository.name }}" \
+            https://vectana.example.com/api/projects/<project ID>/packages/import
+```
+
+You can also send a lockfile as is, without an SBOM:
+
+```yaml
+      - name: Upload lockfile to Vectana
+        run: |
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${{ secrets.VECTANA_TOKEN }}" \
+            -F "file=@package-lock.json" \
+            https://vectana.example.com/api/projects/<project ID>/packages/import
+```
+
+### Maven projects
+
+Maven has no lockfile, so build an SBOM with the [CycloneDX Maven Plugin](https://github.com/CycloneDX/cyclonedx-maven-plugin) and send that:
+
+```bash
+mvn org.cyclonedx:cyclonedx-maven-plugin:makeAggregateBom -DoutputFormat=json
+curl -fsS -X POST -H "Authorization: Bearer $VECTANA_TOKEN" \
+  -F "file=@target/bom.json" \
+  https://vectana.example.com/api/projects/<project ID>/packages/import
+```
+
+With Gradle, send the `gradle.lockfile` written by [dependency locking](https://docs.gradle.org/current/userguide/dependency_locking.html) as is.
+
+## When it fails
+
+| Status | Cause |
+| --- | --- |
+| 401 | The token is wrong, revoked or expired |
+| 404 | Wrong project ID (a token only works for the project it was issued for) |
+| 413 | The file is larger than 10 MB |
+| 422 | Unsupported format, or the file couldn't be read |
