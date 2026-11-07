@@ -1,15 +1,15 @@
 ---
 title: パッケージの登録
-description: 監視するパッケージを手で登録する方法と、lockfile・mise.toml を取り込む方法。
+description: 監視するパッケージを手で登録する方法と、lockfile・SBOM・mise.toml を取り込む方法。
 ---
 
 脆弱性と EOL のチェックは、プロジェクトに登録したパッケージのバージョンに対して行います。プロジェクトの「パッケージ」タブで登録します。
 
-## lockfile を取り込む（おすすめ）
+## lockfile・SBOM を取り込む（おすすめ）
 
 ![パッケージタブ](/screenshots/ja/project-packages.png)
 
-ドロップ欄に lockfile をドラッグ＆ドロップするか、クリックしてファイルを選びます。複数のファイルを一度に取り込むこともできます。
+ドロップ欄に lockfile や SBOM をドラッグ＆ドロップするか、クリックしてファイルを選びます。複数のファイルを一度に取り込むこともできます。CI から自動で送ることもできます（[CI から自動で登録する](/guides/ci)）。
 
 | ファイル | 種類 |
 | --- | --- |
@@ -18,11 +18,24 @@ description: 監視するパッケージを手で登録する方法と、lockfil
 | `uv.lock` / `poetry.lock` | PyPI |
 | `requirements.txt`（`requirements-dev.txt` など、名前に requirements を含む `.txt`） | PyPI |
 | `pubspec.lock` | Pub（Dart / Flutter） |
+| `go.mod` / `go.sum` | Go |
+| `composer.lock` | Packagist（PHP） |
+| `Cargo.lock` | crates.io（Rust） |
+| `gradle.lockfile` | Maven（Gradle） |
+| SBOM: CycloneDX（JSON / XML）、SPDX（JSON / tag-value） | 複数のエコシステムをまとめて（下記） |
 | `mise.toml` / `.tool-versions` | ランタイム（[EOL](/guides/eol) に登録されます） |
 
 :::note
 `requirements.txt` は、`django==4.2.11` のようにバージョンを `==` で固定した行だけを取り込みます。範囲指定（`>=` など）は、どのバージョンを使っているか特定できないため対象外です。
 :::
+
+`go.mod` と `go.sum` はどちらか一方で十分です。`go.sum` には今は使われていない古いバージョンも残っていることがあるため、`go.mod`（Go 1.17 以降は間接依存も含みます）をおすすめします。
+
+### SBOM
+
+CycloneDX と SPDX の SBOM は、ファイル名ではなく中身で判別するので、`bom.json` や `sbom.spdx.json` など名前は自由です。各コンポーネントの purl（パッケージ URL）から、npm / PyPI / Maven / Go / crates.io / Packagist / RubyGems / NuGet / Pub のパッケージとして登録します。
+
+OS のパッケージ（`deb` `rpm` `apk` など）や purl のないコンポーネントは対象外で、取り込み後に件数が表示されます。Maven のように lockfile がないビルドツールでは、SBOM を作って取り込んでください（[Maven プロジェクト](/guides/ci#maven-プロジェクト)）。
 
 取り込むと、すぐにバックグラウンドで脆弱性と EOL のチェックが始まります。
 
@@ -37,7 +50,7 @@ description: 監視するパッケージを手で登録する方法と、lockfil
 依存関係を更新したら、新しい lockfile を取り込み直してください。古いバージョンの検知結果が消えて、最新の状態になります。
 
 :::warning
-差分はファイル名で判断します。モノレポで `frontend/package-lock.json` と `admin/package-lock.json` のように同じ名前のファイルが複数ある場合、同じプロジェクトに取り込むと後から入れたほうで置き換わります。別々のプロジェクトに分けて登録してください。
+差分はファイル名で判断します。モノレポで `frontend/package-lock.json` と `admin/package-lock.json` のように同じ名前のファイルが複数ある場合、同じプロジェクトに取り込むと後から入れたほうで置き換わります。別々のプロジェクトに分けるか、CI から `source` に別々の名前を付けて送ってください（[複数のリポジトリやサービスを 1 つのプロジェクトに](/guides/ci#複数のリポジトリやサービスを-1-つのプロジェクトに)）。
 :::
 
 ## 手で登録する
