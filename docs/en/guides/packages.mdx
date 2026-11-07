@@ -1,15 +1,15 @@
 ---
 title: Registering packages
-description: Add packages to watch by hand, or import them from lockfiles and mise.toml.
+description: Add packages to watch by hand, or import them from lockfiles, SBOMs and mise.toml.
 ---
 
 Vulnerability and EOL checks run against the package versions registered in a project. Register them on the project's "Packages" tab.
 
-## Import a lockfile (recommended)
+## Import a lockfile or SBOM (recommended)
 
 ![Packages tab](/screenshots/en/project-packages.png)
 
-Drag and drop a lockfile onto the drop area, or click it to choose files. You can import several files at once.
+Drag and drop a lockfile or SBOM onto the drop area, or click it to choose files. You can import several files at once. CI can also send them automatically ([Register from CI](/guides/ci)).
 
 | File | Type |
 | --- | --- |
@@ -18,11 +18,24 @@ Drag and drop a lockfile onto the drop area, or click it to choose files. You ca
 | `uv.lock` / `poetry.lock` | PyPI |
 | `requirements.txt` (and any `.txt` with "requirements" in its name, such as `requirements-dev.txt`) | PyPI |
 | `pubspec.lock` | Pub (Dart / Flutter) |
+| `go.mod` / `go.sum` | Go |
+| `composer.lock` | Packagist (PHP) |
+| `Cargo.lock` | crates.io (Rust) |
+| `gradle.lockfile` | Maven (Gradle) |
+| SBOM: CycloneDX (JSON / XML), SPDX (JSON / tag-value) | Several ecosystems at once (see below) |
 | `mise.toml` / `.tool-versions` | Runtimes (registered for [EOL](/guides/eol)) |
 
 :::note
 From `requirements.txt`, only lines pinned with `==` (such as `django==4.2.11`) are imported. Ranges like `>=` don't say which version you actually use.
 :::
+
+Either `go.mod` or `go.sum` is enough. `go.sum` can still list old versions you no longer use, so `go.mod` (which includes indirect dependencies since Go 1.17) is recommended.
+
+### SBOM
+
+CycloneDX and SPDX SBOMs are recognized by their content, not their name, so call them `bom.json`, `sbom.spdx.json` or anything else. Each component's purl (package URL) is registered as an npm / PyPI / Maven / Go / crates.io / Packagist / RubyGems / NuGet / Pub package.
+
+OS packages (`deb`, `rpm`, `apk`…) and components without a purl are left out; the import tells you how many. For build tools without a lockfile, such as Maven, build an SBOM and import that ([Maven projects](/guides/ci#maven-projects)).
 
 Checking starts in the background right after the import.
 
@@ -37,7 +50,7 @@ Importing a file with the same name again applies **only the differences**:
 After updating your dependencies, import the new lockfile. Findings for the old versions disappear and everything is up to date.
 
 :::warning
-Differences are tracked by file name. If a monorepo has several files with the same name, such as `frontend/package-lock.json` and `admin/package-lock.json`, importing both into one project makes the second replace the first. Use a separate project for each.
+Differences are tracked by file name. If a monorepo has several files with the same name, such as `frontend/package-lock.json` and `admin/package-lock.json`, importing both into one project makes the second replace the first. Use a separate project for each, or send them from CI with different `source` names ([Several repositories or services in one project](/guides/ci#several-repositories-or-services-in-one-project)).
 :::
 
 ## Add a package by hand

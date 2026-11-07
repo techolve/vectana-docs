@@ -18,8 +18,11 @@ Vectana（ベクタナ）は、プロジェクトが使っているパッケー�
   <Card title="サポート終了（EOL）の検知" icon="calendar-clock" href="/guides/eol">
     フレームワークや言語・DB・OS のサポート期限を endoflife.date で確認し、期限切れ・期限間近を知らせます。
   </Card>
-  <Card title="lockfile と mise.toml の取り込み" icon="upload" href="/guides/packages">
-    `package-lock.json` や `uv.lock`、`pubspec.lock`、`mise.toml` などをドロップするだけで登録できます。
+  <Card title="lockfile・SBOM・mise.toml の取り込み" icon="upload" href="/guides/packages">
+    `package-lock.json` や `uv.lock`、`go.mod`、CycloneDX / SPDX の SBOM、`mise.toml` などをドロップするだけで登録できます。
+  </Card>
+  <Card title="CI から自動で登録" icon="workflow" href="/guides/ci">
+    プロジェクト単位の API トークンで、GitHub Actions などから lockfile や SBOM を送れます。
   </Card>
   <Card title="メール・Discord・Slack に通知" icon="bell" href="/guides/notifications">
     新しく見つかったものをまとめて、担当メンバーのメールとチームのチャンネルに送ります。

@@ -18,8 +18,11 @@ Vectana watches the packages and runtimes your projects use for **vulnerabilitie
   <Card title="End-of-life detection" icon="calendar-clock" href="/guides/eol">
     Checks support dates for frameworks, languages, databases and operating systems with endoflife.date.
   </Card>
-  <Card title="Import lockfiles and mise.toml" icon="upload" href="/guides/packages">
-    Drop `package-lock.json`, `uv.lock`, `pubspec.lock`, `mise.toml` and more to register everything at once.
+  <Card title="Import lockfiles, SBOMs and mise.toml" icon="upload" href="/guides/packages">
+    Drop `package-lock.json`, `uv.lock`, `go.mod`, a CycloneDX / SPDX SBOM, `mise.toml` and more to register everything at once.
+  </Card>
+  <Card title="Register from CI" icon="workflow" href="/guides/ci">
+    Send lockfiles and SBOMs from GitHub Actions and other CI with a project API token.
   </Card>
   <Card title="Email, Discord and Slack" icon="bell" href="/guides/notifications">
     New findings are bundled into one digest per recipient and sent to project members and team channels.
