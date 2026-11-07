@@ -1,0 +1,42 @@
+---
+title: Invoices and payments
+description: Plan installment and monthly invoices from won estimates, and record when accounting sends them and gets paid.
+---
+
+For each won estimate, plan how many invoices it is billed in and when. The invoices themselves are issued in your accounting software; Vectana records that they were sent and paid.
+
+## Plan invoices (sales) [#plan]
+
+1. Open the project's "Estimates" tab. With a won estimate, "Invoices" appears below the list
+2. Pick the estimate in "Plan invoices…"
+3. Choose how to bill it
+   - **One-time estimate**: a split of "100", "30 / 70", "50 / 50" or "30 / 40 / 30" fills the amounts and dates (spread from the project's start month to its end month). Change any label, date or amount
+   - **Monthly estimate**: enter the first month and the number of months and press "List" for one invoice per month
+4. "Save". A total that differs from the estimate's amount shows in amber
+
+Planning again replaces only the installments that are still planned. Invoiced and paid ones stay. A won estimate without invoices is named in the "Invoices" section as a reminder.
+
+## Record invoices and payments (accounting) [#record]
+
+"Billing" in the sidebar lists a month's invoices.
+
+- The cards show "Planned this month", "Awaiting payment", "Paid this month" and "Overdue", with counts and amounts. Click a card to show only those
+- The list holds invoices planned in the month, those paid in it, and every invoice still awaiting payment (overdue included)
+- "Mark invoiced" records the invoice date and the payment due date, which defaults to the end of the following month
+- "Mark paid" records the payment date
+- "Undo" steps back one status
+
+An invoiced one past its due date shows as "Overdue" in red.
+
+"Export CSV" downloads the list on screen (UTF-8 that Excel opens directly), for your accounting software or the monthly close.
+
+## Who can do what [#who]
+
+| Who | Plan and change invoices | Record invoiced and paid | "Billing" page |
+| --- | --- | --- | --- |
+| Sales | Their company's projects | No | No (they see invoices on the Estimates tab) |
+| Accounting | No | Their company's projects | Their company |
+| Company administrators | Their company's projects | Their company's projects | Their company |
+| Group administrators | All | All | All companies (filter by company) |
+| Employees | No | No | No (they see project invoices) |
+| Partner (BP) users | Hidden | Hidden | No |
