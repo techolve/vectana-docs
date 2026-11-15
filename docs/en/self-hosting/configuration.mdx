@@ -13,7 +13,7 @@ Settings go in `.env`, next to `compose.yaml`. Apply changes with `docker compos
 | `VECTANA_VERSION` | `latest` | The image tag. Pinning a version such as `1.0.0` is recommended |
 | `POSTGRES_PASSWORD` | (required) | Database password |
 | `SECRET_KEY` | (required) | Key that signs logins. Generate it with `openssl rand -hex 32`. Changing it logs everyone out |
-| `WEB_URL` | `http://localhost:8000` | Public URL, used for links in invitation and notification emails and as the GitHub / GitLab webhook address |
+| `WEB_URL` | `http://localhost:8000` | Public URL, used for links in invitation and notification emails, as the GitHub / GitLab webhook address, and in the remote MCP (`/mcp`) OAuth URLs |
 | `GROUP_NAME` | `Vectana Group` | Group name shown in the app |
 
 ## Checks
@@ -39,6 +39,15 @@ The "Ending soon" window for EOL is set in the app under [System settings](/admi
 | `CLOUDFLARE_ACCOUNT_ID` / `CLOUDFLARE_API_TOKEN` | (empty) | Used with `MAIL_BACKEND=cloudflare` |
 
 See [Email](/self-hosting/mail) for details.
+
+## Remote MCP
+
+In the Docker image, the app container also runs the MCP server internally and serves it at `/mcp` ([Use from AI](/guides/ai)). Nothing to configure, but set `WEB_URL` to the public URL. Behind a reverse proxy, forward `/mcp`, `/.well-known/` and `/oauth/` to the app too.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `MCP_SCRIPT` | The MCP server in the image | Set it empty to turn off the remote MCP (`/mcp` then answers 503) |
+| `MCP_PORT` | `8001` | Port the MCP server uses inside the container (`127.0.0.1` only) |
 
 ## Other
 
