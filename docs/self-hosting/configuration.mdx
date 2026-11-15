@@ -13,7 +13,7 @@ description: .env で設定できる環境変数の一覧。
 | `VECTANA_VERSION` | `latest` | イメージのタグ。`1.0.0` のように固定するのがおすすめです |
 | `POSTGRES_PASSWORD` | （必須） | データベースのパスワード |
 | `SECRET_KEY` | （必須） | ログイン情報の署名に使う鍵。`openssl rand -hex 32` で作ります。変えると全員がログアウトされます |
-| `WEB_URL` | `http://localhost:8000` | 公開 URL。招待メールや通知のリンク、GitHub・GitLab の Webhook の宛先に使います |
+| `WEB_URL` | `http://localhost:8000` | 公開 URL。招待メールや通知のリンク、GitHub・GitLab の Webhook の宛先、リモート MCP（`/mcp`）の OAuth の URL に使います |
 | `GROUP_NAME` | `Vectana Group` | 画面に表示するグループ名 |
 
 ## チェック
@@ -39,6 +39,15 @@ EOL の「まもなく終了」にする日数は、画面の [システム設�
 | `CLOUDFLARE_ACCOUNT_ID` / `CLOUDFLARE_API_TOKEN` | （空） | `MAIL_BACKEND=cloudflare` のときに使います |
 
 詳しくは [メールの設定](/self-hosting/mail) を参照してください。
+
+## リモート MCP
+
+Docker イメージでは、アプリのコンテナが MCP サーバも内部で起動し、`/mcp` で公開します（[AI から操作する](/guides/ai)）。設定は不要ですが、`WEB_URL` を公開 URL にしておいてください。リバースプロキシを挟む場合は、`/mcp` と `/.well-known/` と `/oauth/` もアプリに転送します。
+
+| 変数 | 初期値 | 説明 |
+| --- | --- | --- |
+| `MCP_SCRIPT` | イメージ内の MCP サーバ | 空にするとリモート MCP を無効にします（`/mcp` は 503 を返します） |
+| `MCP_PORT` | `8001` | MCP サーバがコンテナ内で使うポート（`127.0.0.1` のみ） |
 
 ## そのほか
 
