@@ -10,7 +10,7 @@ Settings go in `.env`, next to `compose.yaml`. Apply changes with `docker compos
 | Variable | Default | Description |
 | --- | --- | --- |
 | `VECTANA_IMAGE` | `heki0824/vectana` | The image to run |
-| `VECTANA_VERSION` | `latest` | The image tag. Pinning a version such as `1.0.0` is recommended |
+| `VECTANA_VERSION` | `latest` | The image tag. Pinning a version such as `1.3.1` is recommended |
 | `POSTGRES_PASSWORD` | (required) | Database password |
 | `SECRET_KEY` | (required) | Key that signs logins. Generate it with `openssl rand -hex 32`. Changing it logs everyone out |
 | `WEB_URL` | `http://localhost:8000` | Public URL, used for links in invitation and notification emails, as the GitHub / GitLab webhook address, and in the remote MCP (`/mcp`) OAuth URLs |

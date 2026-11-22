@@ -5,11 +5,15 @@ description: See the vulnerability and end-of-life status of every project you c
 
 The dashboard summarizes **every project you can see**. Which projects those are depends on your [permissions](/admin/users).
 
-## Summary cards
-
 ![Dashboard](/screenshots/en/dashboard.png)
 
-Six cards sit at the top.
+## Tasks
+
+Open tasks come first, overdue and soonest due at the top. Switch between "Mine", "Team" and "Unassigned". See [Tasks](/guides/tasks#dashboard) for details.
+
+## Summary cards
+
+Six cards sit below the tasks.
 
 | Card | What it counts |
 | --- | --- |
@@ -45,3 +49,23 @@ At the bottom, switch between two tabs:
 - **EOL**: packages and runtimes that have ended or are ending soon (up to 20)
 
 To see everything, open "Vulnerabilities" or "EOL" in the sidebar.
+
+## Organization dashboard [#org]
+
+![Organization dashboard](/screenshots/en/org-dashboard.png)
+
+"By organization" in the sidebar lists these numbers per company and department. A department's numbers include its sub-departments.
+
+| Column | Meaning |
+| --- | --- |
+| Projects | Projects in that company or department |
+| Open | Open vulnerabilities by severity |
+| Overdue | Vulnerabilities still Open or Acknowledged past their due date, with the longest overdue days |
+| EOL | Packages and runtimes that have ended or are ending soon |
+| Nearest EOL | Days until the nearest EOL date (or days since it passed) |
+
+The due date is the vulnerability's own, or else the [SLA in system settings](/admin/settings#sla). Use the arrows to expand or collapse departments, and the menu at the top right to pick a company. "Download CSV" saves the same table.
+
+The tabs below list overdue vulnerabilities and upcoming EOL. Only projects you can see are counted, so a company or department you only partly see is marked "partial".
+
+Admins and department heads receive the same summary by email as the [weekly report](/admin/settings#report).

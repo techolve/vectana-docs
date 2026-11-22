@@ -17,6 +17,26 @@ Anything reaching end of life within this window becomes "Ending soon", is shown
 
 Saving re-checks EOL for every project right away. Anything that becomes "Ending soon" because the window grew is notified as usual.
 
+## Vulnerability due dates (SLA) [#sla]
+
+When a vulnerability has no due date of its own, it counts as **overdue** once it stays Open or Acknowledged for longer than these days after detection. The overdue numbers on the dashboard, the [organization dashboard](/getting-started/dashboard#org) and the weekly report use these days.
+
+| Severity | Default |
+| --- | --- |
+| CRITICAL | 7 days |
+| HIGH | 30 days |
+| MEDIUM | 90 days |
+| LOW | 180 days |
+| Unknown | 90 days |
+
+The range is 1–3650 days. A due date set on the vulnerability itself takes precedence ([assignee and due date](/guides/vulnerabilities#assignee-and-due-date)).
+
+## Weekly report [#report]
+
+When on, group admins, company admins and department heads get a weekly email summarizing their scope (open vulnerabilities, overdue items and EOL). It is on by default and sent on Mondays.
+
+It goes out after the hour set on the server (9:00 Japan time by default). People who turned off email notifications don't get it.
+
 ## Other settings
 
 The group name, check interval, email delivery and so on are server environment variables. See [Configuration](/self-hosting/configuration).

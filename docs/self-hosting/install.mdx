@@ -40,7 +40,7 @@ Vectana は、Docker Hub で公開しているイメージ [`heki0824/vectana`](
     最低限、次の値を設定します。
 
     ```bash .env
-    VECTANA_VERSION=1.0.0
+    VECTANA_VERSION=1.3.1
     POSTGRES_PASSWORD=（ランダムな文字列）
     SECRET_KEY=（openssl rand -hex 32 の出力）
     WEB_URL=https://vectana.example.com
@@ -66,7 +66,7 @@ Vectana は、Docker Hub で公開しているイメージ [`heki0824/vectana`](
 
     ```bash
     curl http://127.0.0.1:8000/api/health
-    # {"status":"ok","version":"1.0.0"}
+    # {"status":"ok","version":"1.3.1"}
     ```
   </Step>
   <Step title="最初の管理者を作る">

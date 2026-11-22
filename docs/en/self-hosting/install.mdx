@@ -40,7 +40,7 @@ One image runs as four containers, each with its own job.
     At minimum, set these values.
 
     ```bash .env
-    VECTANA_VERSION=1.0.0
+    VECTANA_VERSION=1.3.1
     POSTGRES_PASSWORD=(a random string)
     SECRET_KEY=(output of openssl rand -hex 32)
     WEB_URL=https://vectana.example.com
@@ -66,7 +66,7 @@ One image runs as four containers, each with its own job.
 
     ```bash
     curl http://127.0.0.1:8000/api/health
-    # {"status":"ok","version":"1.0.0"}
+    # {"status":"ok","version":"1.3.1"}
     ```
   </Step>
   <Step title="Create the first administrator">
