@@ -7,6 +7,28 @@ Vectana has an [MCP](https://modelcontextprotocol.io/) server so AI clients such
 
 The AI acts **with your permissions**. Projects you cannot see and fields you cannot change stay hidden and read-only for the AI too.
 
+## Use it from claude.ai and the Claude apps (remote MCP)
+
+Vectana serves MCP at `https://<your Vectana URL>/mcp`. Add it to claude.ai as a connector and you can use it from Claude on the web, desktop and mobile apps, and in projects, with nothing to install. There is no token to paste: you connect by signing in to Vectana.
+
+1. In claude.ai, open **Settings → Connectors** and choose **Add custom connector**
+2. Enter `Vectana` as the name and `https://vectana.example.com/mcp` as the URL
+3. Click **Connect**. Vectana's sign-in page opens: sign in, choose the access to grant (read and write, or read only) and click **Allow**
+
+Connecting adds a token such as `Claude (OAuth)` under **Settings → Personal tokens**. To disconnect, revoke that token.
+
+:::note
+On Team and Enterprise plans, an organization owner adds the custom connector first, then each member clicks **Connect**.
+:::
+
+Claude Code can use the remote MCP without a token too (sign in from `/mcp` the first time):
+
+```bash
+claude mcp add --transport http vectana https://vectana.example.com/mcp
+```
+
+The personal token and npm package below are for AI clients without remote MCP support, or when you want to run the server locally.
+
 ## Issue a personal token
 
 Issue one under **Personal settings → Personal tokens (AI and scripts)**.

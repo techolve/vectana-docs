@@ -7,6 +7,28 @@ Vectana には、Claude Desktop や Claude Code などの AI クライアント�
 
 AI は**あなたの権限で**操作します。画面で見えないプロジェクトや、変更できない項目は、AI からも見えず変更もできません。
 
+## claude.ai や Claude アプリから使う（リモート MCP）
+
+Vectana は `https://<Vectana の URL>/mcp` で MCP を提供しています。claude.ai にコネクタとして登録すると、Claude の Web・デスクトップ・モバイルアプリやプロジェクトから、何もインストールせずに使えます。トークンを貼り付ける必要はなく、Vectana へのログインで連携します。
+
+1. claude.ai の「設定 → コネクタ」で「カスタムコネクタを追加」を押します
+2. 名前に `Vectana`、URL に `https://vectana.example.com/mcp` を入力して追加します
+3. 「連携」を押すと Vectana のログイン画面が開きます。ログインして、許可する権限（読み書き / 読み取りのみ）を選び「許可する」を押します
+
+連携すると、「個人設定 → 個人用トークン」に `Claude (OAuth)` のようなトークンが増えます。連携をやめるときは、そのトークンを失効させてください。
+
+:::note
+Team・Enterprise プランでは、組織のオーナーがカスタムコネクタを追加してから、各メンバーが「連携」します。
+:::
+
+Claude Code でも、トークンなしでリモート MCP を使えます（初回に `/mcp` からログインします）。
+
+```bash
+claude mcp add --transport http vectana https://vectana.example.com/mcp
+```
+
+以下の個人用トークンと npm パッケージを使う方法は、リモート MCP に対応していない AI クライアントや、手元で動かしたい場合に使います。
+
 ## 個人用トークンを発行する
 
 「個人設定」の「個人用トークン（AI・スクリプト連携）」で発行します。
